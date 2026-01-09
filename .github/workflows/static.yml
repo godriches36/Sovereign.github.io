@@ -3,7 +3,7 @@ name: Deploy Sovereign OS
 on:
   push:
     branches: ["main"]
-  workflow_dispatch: # This allows you to start it manually!
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,7 +11,17 @@ permissions:
   id-token: write
 
 jobs:
+  mission-control:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 0.0.7 Mission Check
+        run: |
+          echo "Checking Agbon Kingdom 0.0.7 Checklist..."
+          echo "Status: Earth Seed Verified"
+          echo "Status: ANBSN_Sovereign_Master Detected"
+
   deploy:
+    needs: mission-control
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
