@@ -1,0 +1,42 @@
+name: Deploy Agbon OS to Firebase Hosting
+run-name: Deploying Agbon OS by @${{ github.actor }}
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Sovereign OS
+        run: npm run build
+        env:
+          # Injecting Sovereign Secrets into the Build
+          REACT_APP_SOVEREIGN_RPC: ${{ secrets.SOVEREIGN_RPC }}
+          REACT_APP_ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_AGBON_KINGDOM_OS }}'
+          channelId: live
+          projectId: agbon-kingdom-os
