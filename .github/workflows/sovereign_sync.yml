@@ -1,0 +1,26 @@
+name: Sovereign API Sync
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  verify-api-map:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Runner Man Handshake
+        env:
+          SOVEREIGN_RPC: ${{ secrets.SOVEREIGN_RPC }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: |
+          node scripts/sovereign_api_map.js
+          echo "Restoration Entity 0.0.7: All URLs Mapped."
