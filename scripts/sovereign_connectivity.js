@@ -1,11 +1,20 @@
+/**
+ * AGBON OS - SOVEREIGN CONNECTIVITY
+ * Logic: High-Throughput RPC Bridging
+ * COPYRIGHT © 2026 godriches36. ALL RIGHTS RESERVED.
+ */
+
 const { ethers } = require("ethers");
-// Handles high-speed connection to Chainstack and Metamask
-export const connectSovereignWallet = async () => {
+
+// Anchors to your Chainstack RPC via GitHub Secrets
+const RPC_URL = process.env.SOVEREIGN_RPC;
+
+export const initializeSovereignProvider = async () => {
     if (typeof window !== "undefined" && window.ethereum) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-        provider.on("network", (newNet, oldNet) => { if (oldNet) window.location.reload(); });
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-        return provider.getSigner();
+        // Metamask/Web3 Bridge
+        return new ethers.providers.Web3Provider(window.ethereum, "any");
+    } else {
+        // Headless/Runner Man Bridge
+        return new ethers.providers.JsonRpcProvider(RPC_URL);
     }
-    return null;
 };
