@@ -5,6 +5,11 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   ignition:
     name: "Era-Transcendent Deployment"
@@ -16,20 +21,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: "Install Sovereign Dependencies"
         run: |
           npm install ethers@5.7.2 firebase-tools lucide-react
-          # Ready for 1.25T Frequency
+          # Ensuring environment is ready for 1.25T Frequency
 
       - name: "Infrastructure Integrity Check"
         env:
           SOVEREIGN_RPC: ${{ secrets.SOVEREIGN_RPC }}
-          WORLD_LEADER_PRIVATE_KEY: ${{ secrets.WORLD_LEADER_PRIVATE_KEY }}
         run: |
           echo "STATUS: ANCHORING TO 05FA ROOT"
-          echo "VALUATION: 1.25T NAIRA FREQUENCY LOCKED"
-          echo "SECURITY: QUANTUM-RESILIENT ARCHITECTURE VERIFIED"
+          if [ -z "$SOVEREIGN_RPC" ]; then
+            echo "ERROR: SOVEREIGN_RPC SECRET MISSING"
+            exit 1
+          fi
 
       - name: "Deploy to Firebase Hosting"
         uses: FirebaseExtended/action-hosting-deploy@v0
